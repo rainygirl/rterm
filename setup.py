@@ -35,7 +35,7 @@ setup(name='rterm',
           'Programming Language :: Python :: 3.7',
       ],
       keywords='twitter, RSS, CLI, command line, terminal',
-      author='Lee JunHaeng'
+      author='Lee JunHaeng',
       author_email='rainygirl@gmail.com',
       url='https://github.com/rainygirl/rterm',
       license='MIT License',
