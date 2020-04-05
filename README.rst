@@ -4,30 +4,34 @@ Rterm
 
 Rterm is Twitter / RSS reader client for CLI(Command Line Interface).
 
-Rterm have been tested on Mac OS X Catalina 10.15 with iTerm2.
+Rterm have been tested on Mac OS Catalina 10.15 with iTerm2.
 
 
 ----------
 Screenshot
 ----------
 
-.. image:: ./screenshot.gif
+.. image:: https://raw.githubusercontent.com/rainygirl/rterm/master/screenshot.gif
 
 
 ---------------
 Getting Started
 ---------------
 
+
+Try it with::
+
+    pip3 install rterm
+    rterm
+
 You can clone the git repo::
 
     git clone https://github.com/rainygirl/rterm
     cd rterm
     python3 setup.py install
-
-Try it with::
-
     rterm
 
+You may need to get your own Twitter consumer key (API key) and consumer secret key. Go to `https://dev.twitter.com/apps/new <https://dev.twitter.com/apps/new>`_ and copy to terminal.
 
 ---------
 RSS feeds
