@@ -41,7 +41,7 @@ You can add/modify RSS feeds on src/config.py
 
 
 -------------
-Shortcut Keys
+Shortcut keys
 -------------
 
 * [H], [?] : Help
