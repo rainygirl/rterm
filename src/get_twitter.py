@@ -27,7 +27,7 @@ def do(page=2) :
                 access_token = str(d[2]).strip()
                 access_secret = str(d[3]).strip()
 
-                auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+                auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback='oob')
                 auth.set_access_token(access_token, access_secret)
                 flag = True
             except:
@@ -37,7 +37,7 @@ def do(page=2) :
 
         if twitter_config.get('consumer_key') :
 
-            auth = tweepy.OAuthHandler(twitter_config['consumer_key'], twitter_config['consumer_secret'])
+            auth = tweepy.OAuthHandler(twitter_config['consumer_key'], twitter_config['consumer_secret'], callback='oob')
             consumer_key = twitter_config['consumer_key']
             consumer_secret = twitter_config['consumer_secret']
 
@@ -50,7 +50,7 @@ def do(page=2) :
 
             consumer_key = input('Consumer Key : ').strip()
             consumer_secret = input('Consumer Secret : ').strip()
-            auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+            auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback='oob')
 
         if twitter_config.get('access_token') :
 
