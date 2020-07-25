@@ -43,8 +43,10 @@ def do(page=2) :
 
         elif consumer_key == '' :
 
-            print ('\nFirst, create your own Twitter app on the Twitter Developer Site and copy the consumer key.\n')
-            webbrowser.open('https://developer.twitter.com/en/apps',new=2)
+            url = 'https://developer.twitter.com/en/apps'
+
+            print ('\nFirst, create your own Twitter app on the Twitter Developer Site and copy the consumer key.\nURL : %s\n' % url)
+            webbrowser.open(url,new=2)
 
             time.sleep(2)
 
@@ -62,10 +64,12 @@ def do(page=2) :
             except:
                 sys.exit('Invalid consumer key.')
 
+
+            print('\nSign in to twitter in the web browser and copy the PIN...\nURL : %s\n' % auth_url)
             webbrowser.open(auth_url, new=2)
 
-            print('\nSign in to twitter in the web browser and copy the PIN...\n')
             time.sleep(2)
+
             pin = input('PIN : ').strip()
 
             try:
