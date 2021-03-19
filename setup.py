@@ -14,7 +14,7 @@ requires = [
 'future==0.18.2',
 'idna==2.9',
 'oauthlib==3.1.0',
-'Pillow==7.0.0',
+'Pillow==8.1.1',
 'pyfiglet==0.8.post1',
 'PySocks==1.7.1',
 'requests==2.23.0',
