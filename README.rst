@@ -4,7 +4,7 @@ Rterm
 
 Rterm is Twitter / RSS reader client for CLI(Command Line Interface).
 
-Rterm have been tested on Mac OS Catalina 10.15 with iTerm2.
+Rterm have been tested on Mac OS Big Sur 11.2 with iTerm2.
 
 
 ----------
