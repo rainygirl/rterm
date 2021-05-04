@@ -8,7 +8,6 @@ RSS = {
             ('BBC', 'http://feeds.bbci.co.uk/news/rss.xml'),
             ('WSJ', 'https://feeds.a.dj.com/rss/RSSWorldNews.xml'),
             ('ProPublica', 'http://feeds.propublica.org/propublica/main'),
-            ('Reuters', 'http://feeds.reuters.com/Reuters/worldNews'),
             ('New York Times', 'https://www.nytimes.com/svc/collections/v1/publish/https://www.nytimes.com/section/world/rss.xml'),
             ('Al Jazeera', 'https://www.aljazeera.com/xml/rss/all.xml'),
             ('CNN', 'http://rss.cnn.com/rss/edition_world.rss'),
