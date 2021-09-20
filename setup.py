@@ -21,7 +21,7 @@ requires = [
 'requests-oauthlib==1.3.0',
 'six==1.14.0',
 'tweepy==3.8.0',
-'urllib3==1.25.8',
+'urllib3==1.26.5',
 'wcwidth==0.1.8',
 ]
 
