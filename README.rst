@@ -3,13 +3,14 @@ Rterm
 =====
 
 Rterm is Twitter / RSS reader client for CLI(Command Line Interface).
+Rterm requires Python version 3.5 and above.
+
 
 ----------
 Screenshot
 ----------
 
 .. image:: https://raw.githubusercontent.com/rainygirl/rterm/master/screenshot.gif
-
 
 ---------------
 Getting Started
