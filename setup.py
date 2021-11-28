@@ -26,7 +26,7 @@ requires = [
 ]
 
 setup(name='rterm',
-      version='1.3d',
+      version='1.4a',
       description='Twitter and RSS reader client for CLI',
       long_description=open("./README.rst", "r").read(),
       classifiers=[
