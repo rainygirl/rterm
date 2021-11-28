@@ -17,16 +17,16 @@ requires = [
 'Pillow>=7.0.0',
 'pyfiglet==0.8.post1',
 'PySocks==1.7.1',
-'requests==2.23.0',
+'requests>=2.23.0',
 'requests-oauthlib==1.3.0',
 'six==1.14.0',
 'tweepy==3.8.0',
-'urllib3>=1.26.5',
+'urllib3>=1.26.6',
 'wcwidth==0.1.8',
 ]
 
 setup(name='rterm',
-      version='1.3c',
+      version='1.3d',
       description='Twitter and RSS reader client for CLI',
       long_description=open("./README.rst", "r").read(),
       classifiers=[
