@@ -1,73 +1,76 @@
+import datetime
 import feedparser
 import json
-import time
-import datetime
+import os
+import shutil
 import sys
+import time
 
-from .common import p
-from .config import RSS, TIMEZONE
+from .common import p, FEEDS_FILE_NAME
+from .config import TIMEZONE
 
 
-def do(target_category=None, log=False) :
-
-    def getRSS(category, urls, log=False) :
+def do(target_category=None, log=False):
+    def getFeedFromRSS(category, urls, show_author=False, log=False):
 
         rslt = {}
 
-        for source,url in urls :
+        for source, url in urls.items():
             try:
-                if log :
-                    sys.stdout.write('- %s' % url)
+                if log:
+                    sys.stdout.write(f"- {url}")
 
                 d = feedparser.parse(url)
 
-                if log :
-                    sys.stdout.write(' - Done\n')
+                if log:
+                    sys.stdout.write(" - Done\n")
 
             except:
-                sys.exit(' - Failed\n' if log else 0)
+                sys.exit(" - Failed\n" if log else 0)
 
-            for feed in d.entries :
+            for feed in d.entries:
 
                 try:
                     at = datetime.datetime(*feed.published_parsed[:6]).replace(tzinfo=datetime.timezone.utc).astimezone(TIMEZONE)
                 except:
                     continue
 
-                pubDate = at.strftime('%H:%M' if at.date() == datetime.date.today() else '%b %d, %H:%M')
+                pubDate = at.strftime("%H:%M" if at.date() == datetime.date.today() else "%b %d, %H:%M")
 
                 ts = int(time.mktime(feed.published_parsed))
 
-                entries={
-                    'id': ts,
-                    'sourceName': source,
-                    'pubDate': pubDate,
-                    'timestamp': ts,
-                    'url': feed.link,
-                    'title': feed.title,
+                entries = {
+                    "id": ts,
+                    "sourceName": source if not show_author else feed.author,
+                    "pubDate": pubDate,
+                    "timestamp": ts,
+                    "url": feed.link,
+                    "title": feed.title,
                 }
 
-                rslt[entries['id']] = entries
+                rslt[entries["id"]] = entries
 
-        rslt = [val for key,val in sorted(rslt.items(), reverse=True)]
+        rslt = [val for key, val in sorted(rslt.items(), reverse=True)]
 
-        rslt = {
-            'entries': rslt,
-            'created_at': int(time.time())
-        }
+        rslt = {"entries": rslt, "created_at": int(time.time())}
 
-        with open(p['path_data']+'rss_%s.json' % category, 'w', encoding='utf-8') as f: 
+        with open(os.path.join(p["path_data"], f"rss_{category}.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(rslt, ensure_ascii=False))
 
         return rslt
 
-    if target_category :
-        return getRSS(target_category, RSS[target_category]['feeds'], log)
+    if not os.path.isfile(FEEDS_FILE_NAME):
+        shutil.copyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), "feeds.json"), FEEDS_FILE_NAME)
 
-    for category, d in RSS.items() :
-        getRSS(category, d['feeds'], log)
+    with open(FEEDS_FILE_NAME, "r") as fp:
+        RSS = json.load(fp)
+
+    if target_category:
+        return getFeedFromRSS(target_category, RSS[target_category]["feeds"], show_author=RSS[target_category].get("show_author", False), log=log)
+
+    for category, d in RSS.items():
+        getFeedFromRSS(category, d["feeds"], show_author=d.get("show_author", False), log=log)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     do()
- 
