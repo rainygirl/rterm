@@ -316,6 +316,7 @@ def layout(screen):
         for i in lineRange:
             isSelected = (i == CURRENT["line"]) and not CURRENT.get("input", False)
             row = i + 1
+            index = i + CURRENT["page"][CURRENT["category"]] * (screen.height - 2)
 
             if isSelected:
                 screen.print_at(" " * screen.width, 0, row, colour=COLOR["selected"], bg=COLOR["selected"])
@@ -328,13 +329,13 @@ def layout(screen):
             for f in FIELDS[category_]:
                 kColor = 2 if len(f) > 2 else 1
 
-                txt = data[CURRENT["category"]]["entries"][i].get(f[1], "")
+                txt = data[CURRENT["category"]]["entries"][index].get(f[1], "")
 
-                if isSelected and f[1] + "S" in data[CURRENT["category"]]["entries"][i]:
-                    txt = data[CURRENT["category"]]["entries"][i][f[1] + "S"]
-                    if f[1] in data[CURRENT["category"]]["entries"][i] and len(data[CURRENT["category"]]["entries"][i][f[1]]) > len(txt):
+                if isSelected and f[1] + "S" in data[CURRENT["category"]]["entries"][index]:
+                    txt = data[CURRENT["category"]]["entries"][index][f[1] + "S"]
+                    if f[1] in data[CURRENT["category"]]["entries"][index] and len(data[CURRENT["category"]]["entries"][index][f[1]]) > len(txt):
 
-                        txt += " " * (len(data[CURRENT["category"]]["entries"][i][f[1]]) - len(txt))
+                        txt += " " * (len(data[CURRENT["category"]]["entries"][index][f[1]]) - len(txt))
 
                 if txt == "":
                     continue
@@ -378,6 +379,22 @@ def layout(screen):
                 screen.print_at(" " * screen.width, 0, i, colour=0, bg=0)
 
             screen.refresh()
+
+    def pageUp():
+        if CURRENT["page"][CURRENT["category"]] == 0:
+            CURRENT["line"] = 0
+        else:
+            CURRENT["line"] = CONFIG["rowlimit"] - 1
+            CURRENT["page"][CURRENT["category"]] -= 1
+            CONFIG["rowlimit"] = screen.height - 2
+
+    def pageDown():
+        if len(data[CURRENT["category"]]["entries"]) - (CURRENT["page"][CURRENT["category"]] + 1) * (screen.height - 2) < CONFIG["rowlimit"]:
+            CURRENT["line"] = CONFIG["rowlimit"] - 1
+        else:
+            CURRENT["line"] = 0
+            CURRENT["page"][CURRENT["category"]] += 1
+            CONFIG["rowlimit"] = screen.height - 2
 
     def doTimer():
         if CURRENT["line"] > -1:
@@ -468,7 +485,7 @@ def layout(screen):
     reloadLoop.daemon = True
     reloadLoop.start()
 
-    CURRENT = {"line": -1, "column": -1, "category": "twitter"}
+    CURRENT = {"line": -1, "column": -1, "category": "twitter", "page": {category[0]: 0 for category in CONFIG["categories"]}}
 
     data[CURRENT["category"]] = getData(CURRENT["category"])
 
@@ -529,7 +546,7 @@ def layout(screen):
             elif keyCode in KEY["r"]:
                 CURRENT["line"] = -1
                 data[CURRENT["category"]] = getData(CURRENT["category"])
-                CONFIG["rowlimit"] = screen.height - 1
+                CONFIG["rowlimit"] = screen.height - 2
                 if len(data[CURRENT["category"]]["entries"]) < CONFIG["rowlimit"]:
                     CONFIG["rowlimit"] = len(data[CURRENT["category"]]["entries"])
                 drawEntries()
@@ -543,32 +560,40 @@ def layout(screen):
                 resetListArrowKey()
                 CURRENT["line"] += 1
                 if CURRENT["line"] >= CONFIG["rowlimit"]:
-                    CURRENT["line"] = 0
+                    pageDown()
+                    drawEntries(force=True)
+                    screen.refresh()
 
             elif keyCode == KEY["up"] or keyCode in KEY["k"] + KEY["w"]:
                 resetListArrowKey()
                 CURRENT["line"] -= 1
                 if CURRENT["line"] < 0:
-                    CURRENT["line"] = CONFIG["rowlimit"] - 1
+                    pageUp()
+                    drawEntries(force=True)
+                    screen.refresh()
 
             elif keyCode == KEY["shiftUp"]:
                 resetListArrowKey()
                 CURRENT["line"] -= 10
                 if CURRENT["line"] < 0:
-                    CURRENT["line"] = CONFIG["rowlimit"] - 1
+                    pageUp()
+                    drawEntries(force=True)
+                    screen.refresh()
 
             elif keyCode == KEY["shiftDown"]:
                 CURRENT["shift"] = 0
                 CURRENT["oline"] = CURRENT["line"]
                 CURRENT["line"] += 10
                 if CURRENT["line"] >= CONFIG["rowlimit"]:
-                    CURRENT["line"] = 0
+                    pageDown()
+                    drawEntries(force=True)
+                    screen.refresh()
 
             elif keyCode in KEY["o"]:
-                openURL(data[CURRENT["category"]]["entries"][CURRENT["line"]])
+                openURL(data[CURRENT["category"]]["entries"][CURRENT["line"]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)])
 
             elif keyCode == KEY["space"]:
-                cn = data[CURRENT["category"]]["entries"][CURRENT["line"]]
+                cn = data[CURRENT["category"]]["entries"][CURRENT["line"]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)]
 
                 if "medias" in cn and not CURRENT.get("media", False):
                     for url in cn["medias"]:
@@ -620,7 +645,7 @@ def layout(screen):
 
                 CURRENT["line"] = -1
                 CURRENT["oline"] = -1
-                CONFIG["rowlimit"] = screen.height - 1
+                CONFIG["rowlimit"] = screen.height - 2
                 if data[CURRENT["category"]] is not None and len(data[CURRENT["category"]]["entries"]) < CONFIG["rowlimit"]:
                     CONFIG["rowlimit"] = len(data[CURRENT["category"]]["entries"])
 
