@@ -646,8 +646,6 @@ def layout(screen):
 
                 data[CURRENT["category"]] = getData(CURRENT["category"])
 
-                # CURRENT["line"][CURRENT["category"]] = -1
-                # CURRENT["oline"] = -1
                 CONFIG["rowlimit"] = screen.height - 2
                 if data[CURRENT["category"]] is not None and len(data[CURRENT["category"]]["entries"]) < CONFIG["rowlimit"]:
                     CONFIG["rowlimit"] = len(data[CURRENT["category"]]["entries"])
