@@ -383,6 +383,9 @@ def layout(screen):
     def pageUp():
         if CURRENT["page"][CURRENT["category"]] == 0:
             CURRENT["line"] = 0
+            alert(screen, "top of the list")
+            time.sleep(0.5)
+            drawCategories()
         else:
             CURRENT["line"] = CONFIG["rowlimit"] - 1
             CURRENT["page"][CURRENT["category"]] -= 1
@@ -391,6 +394,9 @@ def layout(screen):
     def pageDown():
         if len(data[CURRENT["category"]]["entries"]) - (CURRENT["page"][CURRENT["category"]] + 1) * (screen.height - 2) < CONFIG["rowlimit"]:
             CURRENT["line"] = CONFIG["rowlimit"] - 1
+            alert(screen, "end of the list")
+            time.sleep(0.5)
+            drawCategories()
         else:
             CURRENT["line"] = 0
             CURRENT["page"][CURRENT["category"]] += 1
