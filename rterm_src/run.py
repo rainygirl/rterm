@@ -203,14 +203,14 @@ def layout(screen):
                 if ccategory != CURRENT["category"]:
                     return
 
-                if CURRENT["line"] > -1:
+                if CURRENT["line"][CURRENT["category"]] > -1:
                     i = -1
                     for entry in data[ccategory]["entries"]:
                         i += 1
                         if entry["id"] == CURRENT["id"]:
-                            CURRENT["line"] = i
+                            CURRENT["line"][CURRENT["category"]] = i
                             break
-                    CURRENT["line"] = i
+                    CURRENT["line"][CURRENT["category"]] = i
 
                 drawCategories()
                 drawEntries(force=True)
@@ -308,13 +308,13 @@ def layout(screen):
         if lines:
             lineRange = range(0, lines)
 
-        elif CURRENT["line"] > -1 and not force:
-            lineRange = [CURRENT["line"]]
-            if CURRENT["oline"] != CURRENT["line"] and CURRENT["oline"] != -1:
-                lineRange = [CURRENT["oline"], CURRENT["line"]]
+        elif CURRENT["line"][CURRENT["category"]] > -1 and not force:
+            lineRange = [CURRENT["line"][CURRENT["category"]]]
+            if CURRENT["oline"] != CURRENT["line"][CURRENT["category"]] and CURRENT["oline"] != -1:
+                lineRange = [CURRENT["oline"], CURRENT["line"][CURRENT["category"]]]
 
         for i in lineRange:
-            isSelected = (i == CURRENT["line"]) and not CURRENT.get("input", False)
+            isSelected = (i == CURRENT["line"][CURRENT["category"]]) and not CURRENT.get("input", False)
             row = i + 1
             index = i + CURRENT["page"][CURRENT["category"]] * (screen.height - 2)
 
@@ -323,7 +323,7 @@ def layout(screen):
             else:
                 screen.print_at(" " * screen.width, 0, row, colour=0, bg=0)
 
-            if CURRENT["line"] > -1 and clearline and not force and not isSelected:
+            if CURRENT["line"][CURRENT["category"]] > -1 and clearline and not force and not isSelected:
                 screen.refresh()
 
             for f in FIELDS[category_]:
@@ -350,7 +350,7 @@ def layout(screen):
                 fg = COLOR.get(f[kColor], COLOR["default"])
                 bg = 0
 
-                if i == CURRENT["line"] and not CURRENT.get("input", False):
+                if i == CURRENT["line"][CURRENT["category"]] and not CURRENT.get("input", False):
                     fg = 0
                     bg = COLOR["selected"]
                     if COLOR.get("%sS" % f[kColor], None):
@@ -371,7 +371,7 @@ def layout(screen):
                 except:
                     pass
 
-            if CURRENT["line"] > -1 and clearline and not force and not isSelected:
+            if CURRENT["line"][CURRENT["category"]] > -1 and clearline and not force and not isSelected:
                 screen.refresh()
 
         if force and lineRange[-1] + 1 < screen.height - 1:
@@ -382,35 +382,35 @@ def layout(screen):
 
     def pageUp():
         if CURRENT["page"][CURRENT["category"]] == 0:
-            CURRENT["line"] = 0
+            CURRENT["line"][CURRENT["category"]] = 0
             alert(screen, "top of the list")
             time.sleep(0.5)
             drawCategories()
         else:
-            CURRENT["line"] = CONFIG["rowlimit"] - 1
+            CURRENT["line"][CURRENT["category"]] = CONFIG["rowlimit"] - 1
             CURRENT["page"][CURRENT["category"]] -= 1
             CONFIG["rowlimit"] = screen.height - 2
 
     def pageDown():
         if len(data[CURRENT["category"]]["entries"]) - (CURRENT["page"][CURRENT["category"]] + 1) * (screen.height - 2) < CONFIG["rowlimit"]:
-            CURRENT["line"] = CONFIG["rowlimit"] - 1
+            CURRENT["line"][CURRENT["category"]] = CONFIG["rowlimit"] - 1
             alert(screen, "end of the list")
             time.sleep(0.5)
             drawCategories()
         else:
-            CURRENT["line"] = 0
+            CURRENT["line"][CURRENT["category"]] = 0
             CURRENT["page"][CURRENT["category"]] += 1
             CONFIG["rowlimit"] = screen.height - 2
 
     def doTimer():
-        if CURRENT["line"] > -1:
+        if CURRENT["line"][CURRENT["category"]] > -1:
             CURRENT["shift"] = CURRENT.get("shift", 0) + (1 if CURRENT.get("direction", "left") == "left" else -1)
             drawEntries()
             screen.refresh()
 
     def resetListArrowKey():
         CURRENT["shift"] = 0
-        CURRENT["oline"] = CURRENT["line"]
+        CURRENT["oline"] = CURRENT["line"][CURRENT["category"]]
 
     def showCurrentInputNumber():
 
@@ -491,7 +491,10 @@ def layout(screen):
     reloadLoop.daemon = True
     reloadLoop.start()
 
-    CURRENT = {"line": -1, "column": -1, "category": "twitter", "page": {category[0]: 0 for category in CONFIG["categories"]}}
+    CURRENT = {"line": {category[0]: -1 for category in CONFIG["categories"]},
+               "column": -1,
+               "category": "twitter",
+               "page": {category[0]: 0 for category in CONFIG["categories"]}}
 
     data[CURRENT["category"]] = getData(CURRENT["category"])
 
@@ -526,9 +529,9 @@ def layout(screen):
                 if keyCode == KEY["enter"] or keyCode == KEY[":"]:
 
                     if keyCode == KEY["enter"] and CURRENT["inputnumber"] != "" and int(CURRENT["inputnumber"]) <= CONFIG["rowlimit"]:
-                        CURRENT["line"] = int(CURRENT["inputnumber"]) - 1
+                        CURRENT["line"][CURRENT["category"]] = int(CURRENT["inputnumber"]) - 1
                     else:
-                        CURRENT["line"] = CURRENT["oline"]
+                        CURRENT["line"][CURRENT["category"]] = CURRENT["oline"]
 
                     offNumberMode()
                     continue
@@ -541,7 +544,7 @@ def layout(screen):
                     if CURRENT["inputnumber"] != "":
                         CURRENT["inputnumber"] = CURRENT["inputnumber"][:-1]
                     else:
-                        CURRENT["line"] = CURRENT["oline"]
+                        CURRENT["line"][CURRENT["category"]] = CURRENT["oline"]
                         offNumberMode()
                         continue
 
@@ -550,7 +553,7 @@ def layout(screen):
                 continue
 
             elif keyCode in KEY["r"]:
-                CURRENT["line"] = -1
+                CURRENT["line"][CURRENT["category"]] = -1
                 data[CURRENT["category"]] = getData(CURRENT["category"])
                 CONFIG["rowlimit"] = screen.height - 2
                 if len(data[CURRENT["category"]]["entries"]) < CONFIG["rowlimit"]:
@@ -560,46 +563,46 @@ def layout(screen):
 
             elif keyCode == KEY["esc"]:
                 resetListArrowKey()
-                CURRENT["line"] = -1
+                CURRENT["line"][CURRENT["category"]] = -1
 
             elif keyCode == KEY["down"] or keyCode in KEY["j"] + KEY["s"]:
                 resetListArrowKey()
-                CURRENT["line"] += 1
-                if CURRENT["line"] >= CONFIG["rowlimit"]:
+                CURRENT["line"][CURRENT["category"]] += 1
+                if CURRENT["line"][CURRENT["category"]] >= CONFIG["rowlimit"]:
                     pageDown()
                     drawEntries(force=True)
                     screen.refresh()
 
             elif keyCode == KEY["up"] or keyCode in KEY["k"] + KEY["w"]:
                 resetListArrowKey()
-                CURRENT["line"] -= 1
-                if CURRENT["line"] < 0:
+                CURRENT["line"][CURRENT["category"]] -= 1
+                if CURRENT["line"][CURRENT["category"]] < 0:
                     pageUp()
                     drawEntries(force=True)
                     screen.refresh()
 
             elif keyCode == KEY["shiftUp"]:
                 resetListArrowKey()
-                CURRENT["line"] -= 10
-                if CURRENT["line"] < 0:
+                CURRENT["line"][CURRENT["category"]] -= 10
+                if CURRENT["line"][CURRENT["category"]] < 0:
                     pageUp()
                     drawEntries(force=True)
                     screen.refresh()
 
             elif keyCode == KEY["shiftDown"]:
                 CURRENT["shift"] = 0
-                CURRENT["oline"] = CURRENT["line"]
-                CURRENT["line"] += 10
-                if CURRENT["line"] >= CONFIG["rowlimit"]:
+                CURRENT["oline"] = CURRENT["line"][CURRENT["category"]]
+                CURRENT["line"][CURRENT["category"]] += 10
+                if CURRENT["line"][CURRENT["category"]] >= CONFIG["rowlimit"]:
                     pageDown()
                     drawEntries(force=True)
                     screen.refresh()
 
             elif keyCode in KEY["o"]:
-                openURL(data[CURRENT["category"]]["entries"][CURRENT["line"]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)])
+                openURL(data[CURRENT["category"]]["entries"][CURRENT["line"][CURRENT["category"]]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)])
 
             elif keyCode == KEY["space"]:
-                cn = data[CURRENT["category"]]["entries"][CURRENT["line"]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)]
+                cn = data[CURRENT["category"]]["entries"][CURRENT["line"][CURRENT["category"]]+CURRENT["page"][CURRENT["category"]] * (screen.height - 2)]
 
                 if "medias" in cn and not CURRENT.get("media", False):
                     for url in cn["medias"]:
@@ -621,8 +624,8 @@ def layout(screen):
 
             elif keyCode == KEY[":"]:
                 CURRENT["input"] = True
-                CURRENT["oline"] = CURRENT["line"]
-                CURRENT["line"] = -1
+                CURRENT["oline"] = CURRENT["line"][CURRENT["category"]]
+                CURRENT["line"][CURRENT["category"]] = -1
                 CURRENT["inputnumber"] = ""
 
                 drawEntries(clearline=True, force=True)
@@ -649,8 +652,6 @@ def layout(screen):
 
                 data[CURRENT["category"]] = getData(CURRENT["category"])
 
-                CURRENT["line"] = -1
-                CURRENT["oline"] = -1
                 CONFIG["rowlimit"] = screen.height - 2
                 if data[CURRENT["category"]] is not None and len(data[CURRENT["category"]]["entries"]) < CONFIG["rowlimit"]:
                     CONFIG["rowlimit"] = len(data[CURRENT["category"]]["entries"])
@@ -659,8 +660,8 @@ def layout(screen):
                 drawEntries(force=True)
                 screen.refresh()
 
-            if CURRENT["line"] > -1:
-                CURRENT["id"] = data[CURRENT["category"]]["entries"][CURRENT["line"]].get("id", "")
+            if CURRENT["line"][CURRENT["category"]] > -1:
+                CURRENT["id"] = data[CURRENT["category"]]["entries"][CURRENT["line"][CURRENT["category"]]].get("id", "")
 
             if keyCode in KEYLIST["arrow"]:
                 drawEntries(clearline=True)
@@ -672,7 +673,7 @@ def layout(screen):
             screen.refresh()
             #"""
 
-        if CURRENT["line"] > -1:
+        if CURRENT["line"][CURRENT["category"]] > -1:
             oCurrentTime = currentTime
             currentTime = int(time.time() * (CONFIG["marqueeSpeed" if CURRENT.get("direction", "left") == "left" else "marqueeSpeedReturn"]))
 
