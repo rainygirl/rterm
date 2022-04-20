@@ -6,7 +6,7 @@ if sys.version[0] == "2":
     sys.exit("Use Python 3")
 
 requires = [
-    "Pillow==9.0.0",
+    "Pillow==9.0.1",
     "asciimatics>=1.11.0",
     "feedparser>=5.2.1",
     "tweepy==3.8.0",
@@ -15,7 +15,7 @@ requires = [
 
 setup(
     name="rterm",
-    version="1.6",
+    version="1.6.1",
     description="Twitter and RSS reader client for CLI",
     long_description=open("./README.rst", "r").read(),
     classifiers=[
