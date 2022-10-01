@@ -166,13 +166,13 @@ def layout(screen):
 
             time.sleep(1)
 
-            ccategory = CURRENT.get("category")
+            c_category = CURRENT.get("category")
 
             if (
-                ccategory in data
-                and data[ccategory] is not None
-                and data[ccategory].get("created_at")
-                and int(data[ccategory].get("created_at")) + CONFIG["refresh"]
+                c_category in data
+                and data[c_category] is not None
+                and data[c_category].get("created_at")
+                and int(data[c_category].get("created_at")) + CONFIG["refresh"]
                 < int(time.time())
                 and not CONFIG.get("loading")
             ):
@@ -181,16 +181,16 @@ def layout(screen):
 
                 alert(screen, "UPDATING")
 
-                if ccategory == "twitter":
+                if c_category == "twitter":
                     try:
                         d = get_twitter_feeds(page=1)
                     except Exception as e:
                         CONFIG["loading"] = False
                         alert(screen, str(e))
                         time.sleep(0.5)
-                        if ccategory not in data:
-                            data[ccategory] = {}
-                        data[ccategory]["created_at"] = int(time.time())
+                        if c_category not in data:
+                            data[c_category] = {}
+                        data[c_category]["created_at"] = int(time.time())
                         return
                 else:
                     d = get_feeds_from_rss(CURRENT["category"])
@@ -200,25 +200,25 @@ def layout(screen):
                         alert(
                             screen,
                             "Api limit exceeded"
-                            if ccategory == "twitter"
+                            if c_category == "twitter"
                             else "Update failed",
                         )
                         time.sleep(0.5)
-                        if ccategory not in data:
-                            data[ccategory] = {}
-                        data[ccategory]["created_at"] = int(time.time())
+                        if c_category not in data:
+                            data[c_category] = {}
+                        data[c_category]["created_at"] = int(time.time())
                         return
 
                 CONFIG["loading"] = False
 
-                data[ccategory] = d
+                data[c_category] = d
 
-                if ccategory != CURRENT["category"]:
+                if c_category != CURRENT["category"]:
                     return
 
                 if CURRENT["line"][CURRENT["category"]] > -1:
                     i = -1
-                    for entry in data[ccategory]["entries"]:
+                    for entry in data[c_category]["entries"]:
                         i += 1
                         if entry["id"] == CURRENT["id"]:
                             CURRENT["line"][CURRENT["category"]] = i
@@ -589,7 +589,7 @@ def layout(screen):
     draw_entries(force=True)
     screen.refresh()
 
-    currentTime = int(time.time() * CONFIG["marqueeSpeed"])
+    current_time = int(time.time() * CONFIG["marqueeSpeed"])
 
     while True:
 
@@ -788,8 +788,8 @@ def layout(screen):
             #"""
 
         if CURRENT["line"][CURRENT["category"]] > -1:
-            oCurrentTime = currentTime
-            currentTime = int(
+            o_current_time = current_time
+            current_time = int(
                 time.time()
                 * CONFIG[
                     "marqueeSpeed"
@@ -798,7 +798,7 @@ def layout(screen):
                 ]
             )
 
-            if oCurrentTime != currentTime:
+            if o_current_time != current_time:
                 do_timer()
 
         if screen.has_resized():
